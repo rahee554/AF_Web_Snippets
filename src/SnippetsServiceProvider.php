@@ -15,8 +15,9 @@ class SnippetsServiceProvider extends ServiceProvider
     {
         // Register Blade directive for AJAX form submit
         Blade::directive('AF_AjaxForm', function ($expression) {
-            return "<?php echo \$__env->make('snippets::ajax_form', ['expression' => $expression], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
+            return "<?php echo \$__env->make('AF_AjaxForm::ajax_form', $expression, \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
         });
+        
     }
 
     /**
@@ -25,12 +26,12 @@ class SnippetsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Load views from package
-        $this->loadViewsFrom(__DIR__ . '/views', 'snippets');
+        $this->loadViewsFrom(__DIR__ . '/views', 'AF_AjaxForm');
 
         // Publish assets and views
-        $this->publishes([
-            __DIR__ . '/../public' => public_path('vendor/snippets'),
-            __DIR__ . '/views' => resource_path('views/vendor/snippets'),
-        ], 'af_snippets');
+        // $this->publishes([
+        //     __DIR__ . '/../public' => public_path('vendor/snippets'),
+        //     __DIR__ . '/views' => resource_path('views/vendor/snippets'),
+        // ], 'af_snippets');
     }
 }

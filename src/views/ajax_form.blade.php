@@ -1,13 +1,14 @@
+@push('scripts')
 <script>
     $(document).ready(function() {
-        $('#{{ $params['id'] ?? 'ajaxForm' }}').submit(function(e) {
+        $('#{{ $id ?? '' }}').submit(function(e) {
             e.preventDefault();
 
             var formData = $(this).serialize();
 
             $.ajax({
-                url: "{{ $params['route'] ?? '' }}",
-                type: '{{ $params['method'] ?? 'POST' }}',
+                url: '{{ route($route) }}',
+                type: '{{ strtoupper($method ?? 'POST') }}',
                 data: formData,
                 success: function(response) {
                     console.log(response.message);
@@ -28,10 +29,4 @@
         });
     });
 </script>
-
-@AF_AjaxForm([
-    'id' => 'addIncome',
-    'route' => route('accounts.add.income'),
-    'method' => 'post',
-    'buttonText' => 'Add Income'
-])
+@endpush
