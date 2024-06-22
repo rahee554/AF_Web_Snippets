@@ -1,0 +1,39 @@
+{
+    "name": "artflow-studio/snippets",
+    "type": "library",
+    "description": "A Laravel package for performing basic operations.",
+    "keywords": ["laravel", "ajax", "form", "snippet"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.0",
+        "laravel/framework": "*"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "ArtFlowStudio\\Snippets\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ArtFlowStudio\\Snippets\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php artisan vendor:publish --tag=af_snippets --force"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=af_snippets --force"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ArtFlowStudio\\Snippets\\SnippetsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
