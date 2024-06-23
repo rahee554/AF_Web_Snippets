@@ -1,6 +1,11 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        // Assuming you have a global variable for environment set in your Blade template
+        var env = '{{ app()->environment() }}';
+        // Assuming you have a global variable for logType set in your Blade template
+        var logType = '{{ $logType ?? 'console' }}';
+
         $('#{{ $id ?? '' }}').submit(function(e) {
             e.preventDefault();
 
@@ -18,11 +23,35 @@
                 error: function(xhr) {
                     if (xhr.status === 422) {
                         var errors = xhr.responseJSON.errors;
-                        console.log(errors);
-                        // Handle validation errors
+                        if (env !== 'production') {
+                            if (logType === 'swal') {
+                                Swal.fire({
+                                    title: 'Validation Error',
+                                    html: Object.values(errors).join('<br>'),
+                                    icon: 'error'
+                                });
+                            } else {
+                                console.log(errors);
+                            }
+                        }
+                        // Handle validation errors (display to the user if needed)
                     } else {
-                        console.log('Error occurred. Please try again.');
-                        console.log(xhr.responseText); // Log full error response
+                        var errorMessage = 'Error occurred. Please try again.';
+                        if (env !== 'production') {
+                            errorMessage += '<br>' + xhr.responseText;
+                        }
+                        if (logType === 'swal') {
+                            Swal.fire({
+                                title: 'Error',
+                                html: errorMessage,
+                                icon: 'error'
+                            });
+                        } else {
+                            console.log('Error occurred. Please try again.');
+                            if (env !== 'production') {
+                                console.log(xhr.responseText); // Log full error response
+                            }
+                        }
                     }
                 }
             });
