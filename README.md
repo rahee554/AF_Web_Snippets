@@ -35,7 +35,10 @@ And boom, you are done!
         ],
     ])
 ```
-
+- Unique ID
+```
+generateUniqueID(model::class, 'column_name') // The Column where the unique id is to be saved
+```
 
 ## Authors
 
