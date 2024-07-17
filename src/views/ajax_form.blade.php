@@ -9,22 +9,30 @@
         var successLogType = onSuccess.log ?? 'alert';
         var reloadOnSuccess = (onSuccess.reload ?? true) === true;
         var dataTableId = onSuccess.dtable ?? '';
+        var resetForm = (onSuccess.reset ?? true) === true;
+        var disableSubmit = (onSuccess.disableSubmit ?? false) === true;
+
 
         $('#{{ $id ?? '' }}').submit(function(e) {
             e.preventDefault();
-
             var $form = $(this);
             var $submitButton = $form.find('button[type="submit"]');
             var formData = $form.serialize();
-
-            // Disable the submit button to prevent multiple submissions
-            $submitButton.prop('disabled', true);
-
+            
+           // Disable the submit button to prevent multiple submissions
+           if (disableSubmit) {
+                $submitButton.prop('disabled', true);
+            }
             $.ajax({
                 url: '{{ route($route) }}',
                 type: '{{ strtoupper($method ?? 'POST') }}',
                 data: formData,
                 success: function(response) {
+                    
+                    if (resetForm) {
+                        $form[0].reset();
+                    }
+                    
                     if (successLogType === 'swal') {
                         Swal.fire({
                             title: 'Success',
