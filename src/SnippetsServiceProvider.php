@@ -13,10 +13,6 @@ class SnippetsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Register Blade directive for AJAX form submit
-        Blade::directive('AF_AjaxForm', function ($expression) {
-            return "<?php echo \$__env->make('AF_AjaxForm::ajax_form', $expression, \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
-        });
 
         
         
@@ -28,8 +24,6 @@ class SnippetsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Load views from package
-        $this->loadViewsFrom(__DIR__ . '/views', 'AF_AjaxForm');
-
 
         // Include the helper file(s)
         foreach (glob(__DIR__ . '/helpers/*.php') as $filename) {
