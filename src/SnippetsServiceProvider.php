@@ -18,12 +18,21 @@ class SnippetsServiceProvider extends ServiceProvider
         // Load views from package
         $this->loadViewsFrom(__DIR__ . '/views', 'snippets');
 
-        // Register Livewire component
+        // Register Livewire components
         Livewire::component('afdropdown', \ArtFlowStudio\Snippets\Http\Livewire\AFdropdown::class);
+        Livewire::component('af-distinct-select', \ArtFlowStudio\Snippets\Http\Livewire\AFDistinctSelect::class);
 
-        // Register Blade directive for @AFdropdown
+        // Register Blade directives
         Blade::directive('AFdropdown', function ($expression) {
             return "<?php echo \\Livewire\\Livewire::mount('afdropdown', $expression)->html(); ?>";
+        });
+
+        Blade::directive('AFDistinctSelect', function ($expression) {
+            $mount = "\\Livewire\\Livewire::mount('af-distinct-select', $expression)";
+            return "<?php \n"
+                . "  \$__afdistinct = {$mount};\n"
+                . "  echo is_object(\$__afdistinct) && method_exists(\$__afdistinct, 'html') ? \$__afdistinct->html() : (string)\$__afdistinct;\n"
+                . "?>";
         });
 
         // Include the helper file(s)

@@ -111,6 +111,76 @@ document.addEventListener('livewire:init', function () {
 });
 ```
 
+### 🔍 Distinct Select (AFDistinctSelect)
+
+A specialized component for preventing spelling mistakes by showing existing values from the database. Perfect for fields like cities, countries, or categories where you want consistent data entry.
+
+#### Basic Usage
+
+```blade
+@AFDistinctSelect([
+    'model' => App\Models\Hotel::class,
+    'column' => 'city',
+    'value' => $city,
+    'wireModel' => 'city',
+    'classes' => 'form-control',
+    'placeholder' => 'Select or type city name'
+])
+```
+
+#### Advanced Configuration
+
+```blade
+@AFDistinctSelect([
+    'model' => App\Models\Product::class,
+    'column' => 'category',
+    'value' => $selectedCategory,
+    'wireModel' => 'category',
+    'classes' => 'form-control form-control-sm',
+    'placeholder' => 'Select category...',
+    'minSearchLength' => 2,
+    'maxResults' => 15
+])
+```
+
+#### Handling Updates in Parent Component
+
+```php
+class YourLivewireComponent extends Component
+{
+    public $city = '';
+    
+    protected $listeners = ['updateField' => 'setField'];
+    
+    public function setField($field, $value)
+    {
+        $this->$field = $value;
+    }
+}
+```
+
+#### AFDistinctSelect Features
+
+- ✅ **Spelling Prevention** - Shows existing values to prevent duplicates
+- ✅ **Type-ahead Search** - Real-time filtering of existing values
+- ✅ **Exact Value Selection** - Updates input with exact database spelling
+- ✅ **Data Consistency** - Ensures uniform data entry
+- ✅ **Bootstrap Compatible** - Seamless integration with Bootstrap styling
+- ✅ **Customizable** - Flexible configuration options
+
+#### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `model` | string | required | Eloquent model class |
+| `column` | string | required | Database column to search and display |
+| `value` | string | '' | Current field value |
+| `wireModel` | string | column name | Livewire property to bind |
+| `classes` | string | 'form-control' | CSS classes for input |
+| `placeholder` | string | 'Select or type...' | Input placeholder text |
+| `minSearchLength` | int | 1 | Minimum characters before search |
+| `maxResults` | int | 10 | Maximum results to show |
+
 #### AFDropdown Features
 
 - ✅ **Real-time Search** - Debounced search with 300ms delay
@@ -120,7 +190,7 @@ document.addEventListener('livewire:init', function () {
 - ✅ **Keyboard Navigation** - Accessible dropdown interaction
 - ✅ **Bootstrap Compatible** - Seamless integration with Bootstrap styling
 
-#### Configuration Options
+#### AFDropdown Configuration Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
