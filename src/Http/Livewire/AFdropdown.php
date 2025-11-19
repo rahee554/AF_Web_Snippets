@@ -131,17 +131,7 @@ class AFdropdown extends Component
         $this->debounceTime = $debounceTime;
     }
 
-    /**
-     * Updated search handler - Livewire 3.6+ reactive property
-     */
-    #[\Livewire\Attributes\Computed]
-    public function computedResults()
-    {
-        if (strlen($this->search) < $this->minSearchLength) {
-            return [];
-        }
-        return $this->loadResults();
-    }
+
 
     /**
      * Update search and load results

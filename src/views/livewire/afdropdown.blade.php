@@ -1,7 +1,4 @@
-<div class="afdropdown-wrapper position-relative" 
-     x-data="afdropdownComponent(@entangle('highlightedIndex'), @entangle('search'), @entangle('isOpen'))"
-     x-on:keydown.escape="closeDropdown()"
->
+<div class="afdropdown-wrapper position-relative">
     <div class="afdropdown-input-wrapper position-relative">
         <input type="text"
             class="{{ $classes }}"
@@ -12,7 +9,6 @@
             aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
             aria-controls="afdropdown-results"
             aria-label="{{ $placeholder }}"
-            x-ref="searchInput"
             @keydown.arrow-up.prevent="$wire.previousResult()"
             @keydown.arrow-down.prevent="$wire.nextResult()"
             @keydown.enter.prevent="$wire.selectHighlighted()"
@@ -59,7 +55,6 @@
             <ul class="afdropdown-results dropdown-menu show w-100" 
                 id="afdropdown-results"
                 role="listbox"
-                x-on:click-away="closeDropdown()"
                 style="max-height: 300px; overflow-y: auto; position: absolute; z-index: 1000;">
                 
                 {{-- Has Results --}}
@@ -223,17 +218,3 @@
 </style> 
 @endpush
 
-@push('scripts')
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('afdropdownComponent', (highlightedIndex, search, isOpen) => ({
-                init() {
-                    // Alpine component initialization
-                },
-                closeDropdown() {
-                    this.$wire.closeDropdown();
-                }
-            }));
-        });
-    </script>
-@endpush
