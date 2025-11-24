@@ -5,6 +5,7 @@ namespace ArtFlowStudio\Snippets;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use Livewire\Livewire;
+use ArtFlowStudio\Snippets\Console\Commands\PublishPrintAssets;
 
 class SnippetsServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,7 @@ class SnippetsServiceProvider extends ServiceProvider
     {
         // Load views from package
         $this->loadViewsFrom(__DIR__ . '/views', 'snippets');
+        $this->loadViewsFrom(__DIR__ . '/views/print', 'af-print');
 
         // Register Livewire components
         Livewire::component('afdropdown', \ArtFlowStudio\Snippets\Http\Livewire\AFdropdown::class);
@@ -35,7 +37,14 @@ class SnippetsServiceProvider extends ServiceProvider
                 . "?>";
         });
 
-        // Include the helper file(s)
+        // Register Artisan command if running in console
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                PublishPrintAssets::class,
+            ]);
+        }
+
+        // Include helper files
         foreach (glob(__DIR__ . '/helpers/*.php') as $filename) {
             require_once $filename;
         }

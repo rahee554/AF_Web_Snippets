@@ -1,0 +1,507 @@
+/* ============================
+Variables / base
+============================ */
+:root {
+    /* demo uses 75/50 — make CSS match the demo HTML top/bottom values */
+    --header-h: 75px;
+    --footer-h: 50px;
+    --force-top-spacing: calc(var(--header-h) + 15px);
+    /* no outer page margins: header/footer for top/bottom spacing */
+    /* page margin disabled: rely on header/footer for top/bottom spacing */
+    --page-margin-in: 0.25;
+    /* page dimensions (in) useful for JS calculations; change if not A4 */
+    --page-width: 8.27in;
+    --page-height: 11.69in;
+    /* spacing in pixels above the footer where sections should be cut (so footer area is preserved)
+         default 0 — footer height itself determines the cutoff */
+    --force-bottom-spacing: var(--footer-h) + 10px;
+    --table-font-size: 12px;
+    --watermark-opacity: 0.15; /* Default 15% opacity for better visibility */
+}
+
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, Segoe UI, system-ui, Arial, sans-serif;
+    background: #fff;
+    color: #111;
+    counter-reset: page;
+}
+
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* ---------- Screen header/footer (single) ---------- */
+.site-header {
+    height: 60px; /* Fixed height - independent of print page header */
+    background: #0d6efd;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.screen-content {
+    padding: 20px;
+    flex: 1 1 auto;
+    overflow: auto;
+    background: linear-gradient(180deg, #f8fbff, #fff);
+}
+
+.site-footer {
+    height: 40px; /* Fixed height - independent of print page footer */
+    background: #212529;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+}
+
+/* ---------- Print wrapper + content on screen ---------- */
+#printWrapper {
+    width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    /* box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06); */
+}
+
+.print-header,
+.print-footer {
+    padding: 20px;
+    background-color: #ddd;
+}
+
+/* CRITICAL: Content padding applied on BOTH screen and print to ensure consistency */
+.print-content {
+    background: white;
+    padding: 24px 28px;
+    box-sizing: border-box;
+}
+
+/* Print sections use break-inside: avoid to prevent breaking mid-section */
+.print-section {
+    border-radius: 6px;
+    padding: 12px;
+    box-sizing: border-box;
+    break-inside: avoid;
+    break-after: auto;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.print-section h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.print-section p {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    color: #444;
+}
+
+/* controls */
+.controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 8px 12px;
+    background: #198754;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn.secondary {
+    background: #0d6efd;
+}
+
+.meta {
+    font-size: 12px;
+    color: #666;
+    margin-left: 12px;
+}
+
+/* 11. PAGE INFO */
+.page-info {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 1001;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+}
+
+.scale-indicator {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 123, 255, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    z-index: 1001;
+    font-weight: 600;
+}
+
+
+
+/* ============================
+       Print styles
+       ============================ */
+@media print {
+
+    /* hide UI chrome */
+    .site-header,
+    .site-footer,
+    .controls,
+    .page-info,
+    .scale-indicator,
+    .print-controls,
+    .print-controls-toggle,
+    .no-print {
+        display: none !important;
+    }
+
+    /* show only print wrapper */
+    html,
+    body {
+        height: auto;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    /* hide everything by default */
+    #printWrapper,
+    #printWrapper *,
+    .print-watermark {
+        visibility: visible;
+    }
+
+    /* show print area */
+    #printWrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+
+    /* Fixed header repeated on every printed page */
+    .print-header {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-h);
+        padding: 12px 20px;
+        box-sizing: border-box;
+        background: #ffffff;
+        border-bottom: 2px solid #0d6efd;
+        z-index: 9999;
+    }
+
+    /* Fixed footer repeated on every printed page */
+    .print-footer {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: var(--footer-h);
+        padding: 10px 20px;
+        box-sizing: border-box;
+        background: #ffffff;
+        border-top: 1px solid #ddd;
+        z-index: 9999;
+    }
+
+    /* CRITICAL: Ensure the printable content sits between header & footer on every page.
+       This padding is ESSENTIAL: it prevents content from appearing *behind* fixed header/footer. */
+    .print-content {
+        padding-top: calc(var(--header-h) + 12px) !important;
+        /* header + breathing room */
+        padding-bottom: calc(var(--footer-h) + 8px) !important;
+        /* footer + breathing room */
+        margin: 0 !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Print sections maintain break-inside: avoid to prevent mid-section breaks */
+    .print-section {
+        break-inside: avoid;
+        break-after: auto;
+    }
+
+    /* When we force a new page for a section, give visual top spacing equal to header height.
+       IMPORTANT: JS pagination DOES NOT count this visual spacing in its calculations. */
+    .force-new-page {
+        page-break-before: always !important;
+        padding-top: var(--force-top-spacing) !important;
+    }
+
+    /* If a section is larger than a page, highlight it for debugging */
+    /* .content-overflow-warning {
+        outline: 3px dashed #ff6b6b !important;
+    } */
+
+    /* page setup */
+    @page {
+        margin: calc(var(--page-margin-in) * 1in);
+    }
+
+}
+
+
+
+/* 10. PRINT CONTROLS SIDEBAR */
+.print-controls {
+    position: fixed;
+    top: 0;
+    right: -380px; /* Start hidden off-screen */
+    width: 360px;
+    height: 100vh;
+    background: white;
+    padding: 20px;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow-y: auto;
+    border-left: 2px solid #e0e0e0;
+    transition: right 0.3s ease-in-out;
+}
+
+.print-controls.open {
+    right: 0; /* Slide in when open */
+}
+
+.print-controls-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.print-controls-toggle:hover {
+    background: #0056b3;
+    transform: scale(1.1);
+}
+
+.print-controls-toggle.hidden {
+    right: 380px; /* Move with sidebar when open */
+}
+
+.print-controls h5 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+}
+
+.print-controls .control-group {
+    margin-bottom: 15px;
+}
+
+.print-controls label {
+    font-size: 12px;
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.print-controls button,
+.print-controls select {
+    margin: 2px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.print-controls button:hover,
+.print-controls select:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.print-controls button.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.print-controls .btn-print {
+    background: #28a745 !important;
+    color: white !important;
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    border: none;
+}
+
+.print-controls .btn-print:hover {
+    background: #218838 !important;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin: 0 8px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked+.toggle-slider {
+    background-color: #007bff;
+}
+
+input:checked+.toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    justify-content: space-between;
+}
+
+.control-row label {
+    margin: 0;
+    font-size: 11px;
+}
+
+/* ============================
+Watermark Styles
+============================ */
+.print-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 500px;
+    height: auto;
+    opacity: var(--watermark-opacity);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Show watermark on screen for preview - centered in viewport */
+@media screen {
+    .print-watermark {
+        display: block;
+        opacity: var(--watermark-opacity);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media print {
+    .print-watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        max-width: 500px;
+        opacity: var(--watermark-opacity);
+        pointer-events: none;
+        z-index: 999 !important;
+        display: block !important;
+        visibility: visible !important;
+        mix-blend-mode: multiply;
+    }
+
+    .print-content {
+        position: relative;
+        z-index: auto;
+        background: transparent !important;
+    }
+    
+    .print-section {
+        background: transparent !important;
+    }
+}
